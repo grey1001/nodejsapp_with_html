@@ -1,0 +1,48 @@
+pipeline {
+    agent {
+        label 'agent1'
+    }
+    
+    tools {
+        nodejs 'mynodejs
+        dockerTool 'mydocker' // Name of the Docker installation configured in Jenkins
+    }
+    
+   
+        
+       stage('Build Docker Image') {
+            agent {
+                label 'agent1'
+            }
+            
+            steps {
+                script {
+                    def imageName = 'greyabiwon/nodejsapp:v.1'
+                    
+                    docker.build(imageName, "-f Dockerfile .")
+                    docker.withRegistry('https://registry.hub.docker.com', 'dockerhub_login') {
+                        docker.image(imageName).push()
+                    }
+                }
+            }
+        }
+        
+        stage('Deploy to Container') {
+            agent {
+                label 'agent1'
+            }
+            
+            steps {
+                script {
+                    def containerName = 'node-jsapp'
+                    def imageName = 'greyabiwon/nodejsapp:v.1'
+                    
+                    sh "docker pull $imageName"
+                    sh "docker stop $containerName || true"
+                    sh "docker rm $containerName || true"
+                    sh "docker run -d -p 8992:8080 --name $containerName $imageName"
+                }
+            }
+        }
+    }
+}
