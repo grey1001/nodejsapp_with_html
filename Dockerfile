@@ -1,19 +1,9 @@
-FROM ubuntu
+FROM nginx
 
-WORKDIR /usr/apps/hello-docker/
+COPY index.html /usr/share/nginx/html
 
-RUN apt-get -y update
+EXPOSE 80
 
-RUN apt-get install -y nodejs
+STOPSIGNAL SIGQUIT
 
-RUN apt-get install -y npm
-
-#RUN ln -s /usr/bin/nodejs /usr/bin/node
-
-RUN npm install -g http-server
-
-ADD . /usr/apps/hello-docker/
-
-ADD index.html /usr/apps/hello-docker/index.html
-
-CMD ["http-server", "-s"]
+CMD ["nginx", "-g", "daemon off;"]
