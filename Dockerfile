@@ -1,9 +1,18 @@
-FROM nginx
+# Use a Node.js base image
+FROM node:14
 
-COPY index.html /usr/share/nginx/html
+# Set the working directory
+WORKDIR /usr/src/app
 
-EXPOSE 80
+# Install http-server globally
+RUN npm install -g http-server
 
-STOPSIGNAL SIGQUIT
+# Copy the index.html and css folder
+COPY index.html .
+COPY css css/
 
-CMD ["nginx", "-g", "daemon off;"]
+# Expose port 8080
+EXPOSE 8080
+
+# Start http-server
+CMD ["http-server", "-p", "8080"]
